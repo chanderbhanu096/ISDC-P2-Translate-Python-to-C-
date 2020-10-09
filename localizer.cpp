@@ -43,9 +43,23 @@ vector< vector <float> > initialize_beliefs(vector< vector <char> > grid) {
 	vector< vector <float> > newGrid;
 
 	// your code here
-	
+	int height = grid.size();
+	int width = grid[0].size();
+	int area = height * width;
+	float belief_per_cell = 1.0 / area;
+
+  	vector <float> row;
+	for(int i = 0; i < height; i++) {
+        row.clear();
+        for(int j = 0; j < width; j++) {
+          row.push_back(belief_per_cell);
+        }
+        newGrid.push_back(row);
+    }
+              
 	return newGrid;
 }
+
 
 /**
   TODO - implement this function 
@@ -84,15 +98,34 @@ vector< vector <float> > initialize_beliefs(vector< vector <char> > grid) {
     @return - a normalized two dimensional grid of floats 
          representing the updated beliefs for the robot. 
 */
-vector< vector <float> > move(int dy, int dx, 
+
+vector< vector <float> > move(int dy, int dx,
   vector < vector <float> > beliefs,
-  float blurring) 
+  float blurring)
+	// your code here
 {
-
+  
   vector < vector <float> > newGrid;
-
-  // your code here
-
+  int height = beliefs.size();
+  int width = beliefs[0].size();
+  
+  vector < float> row;
+   for (int i = 0; i < height; i++) {
+		row.clear();
+		for (int j = 0; j < width; j++) {
+			row.push_back(0.0);
+		}
+		newGrid.push_back(row);
+	}
+  
+  
+  for(int i=0; i<beliefs.size(); i++){
+    for(int j=0; j<beliefs.size(); j++){
+        int new_i = (i + dy + height) % height;
+        int new_j = (j + dx + width) % width;
+        newGrid[new_i][new_j] = beliefs[i][j];
+    }
+  }
   return blur(newGrid, blurring);
 }
 
@@ -143,6 +176,14 @@ vector< vector <float> > sense(char color,
 	vector< vector <float> > newGrid;
 
 	// your code here
+	int height = beliefs.size();
+    int width = beliefs[0].size();
+	newGrid = zeros(height, width);
+	for(int i=0; i<height; i++){
+        for(int j=0; j<width; j++){
+           newGrid[i][j] = beliefs[i][j] * (grid[i][j] == color ? p_hit : p_miss);
+        }
+	}
 
 	return normalize(newGrid);
 }
